@@ -1,304 +1,509 @@
 <!DOCTYPE html>
 <html lang="ur">
 <head>
-<meta charset="UTF-8">
-<title>Summer Vacation Work Quiz</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Website Start</title>
 <style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: linear-gradient(#ffc9de, #ffb3d1);
-    font-family: 'Segoe UI', Arial, sans-serif;
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: #060a16;
     overflow-x: hidden;
+  }
+
+  canvas#shader-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    display: block;
+  }
+
+  .content {
     position: relative;
-  }
-
-  /* ---------- Clouds ---------- */
-  .cloud {
-    position: absolute;
-    background: #ffffff;
-    border-radius: 50px;
-    opacity: 0.9;
-    animation: floatCloud linear infinite;
-  }
-  .cloud::before, .cloud::after {
-    content: "";
-    position: absolute;
-    background: #ffffff;
-    border-radius: 50%;
-  }
-  .cloud1 { width: 100px; height: 35px; top: 40px; left: -150px; animation-duration: 25s; }
-  .cloud1::before { width: 50px; height: 50px; top: -20px; left: 10px; }
-  .cloud1::after  { width: 60px; height: 60px; top: -25px; left: 45px; }
-
-  .cloud2 { width: 140px; height: 45px; top: 120px; left: -200px; animation-duration: 35s; animation-delay: 5s;}
-  .cloud2::before { width: 60px; height: 60px; top: -25px; left: 15px; }
-  .cloud2::after  { width: 70px; height: 70px; top: -30px; left: 60px; }
-
-  .cloud3 { width: 90px; height: 30px; top: 220px; left: -150px; animation-duration: 30s; animation-delay: 12s;}
-  .cloud3::before { width: 40px; height: 40px; top: -18px; left: 10px; }
-  .cloud3::after  { width: 50px; height: 50px; top: -22px; left: 40px; }
-
-  @keyframes floatCloud {
-    from { transform: translateX(0); }
-    to   { transform: translateX(120vw); }
-  }
-
-  /* ---------- Sparrows ---------- */
-  .bird {
-    position: absolute;
-    font-size: 22px;
-    animation: flyBird linear infinite;
-    animation-name: flyBird, flap;
-  }
-  .bird1 { top: 60px;  left: -50px; animation-duration: 8s, 0.6s; }
-  .bird2 { top: 150px; left: -100px; animation-duration: 11s, 0.5s; animation-delay: 2s, 0s; }
-  .bird3 { top: 90px;  left: -80px; animation-duration: 9s, 0.55s; animation-delay: 4s, 0s; }
-  .bird4 { top: 200px; left: -120px; animation-duration: 13s, 0.65s; animation-delay: 1s, 0s; }
-
-  @keyframes flyBird {
-    from { transform: translateX(0); }
-    to   { transform: translateX(120vw); }
-  }
-  @keyframes flap {
-    0%, 100% { content: "🐦"; }
-  }
-
-  /* ---------- Screens ---------- */
-  .screen {
-    position: relative;
-    z-index: 2;
-    display: none;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px;
-    min-height: 100vh;
     justify-content: center;
     text-align: center;
-  }
-  .screen.active { display: flex; }
-
-  h1.title {
-    color: #0b3d91;
-    font-weight: 900;
-    font-size: 2.4em;
-    margin-bottom: 40px;
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 
-  .play-box {
-    background: #8b5a2b;
-    color: #000000;
-    font-size: 1.5em;
-    font-weight: bold;
-    padding: 20px 50px;
-    border-radius: 15px;
-    cursor: pointer;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.3);
-    transition: transform 0.2s;
-    user-select: none;
-  }
-  .play-box:hover { transform: scale(1.05); }
-
-  .question-number {
-    align-self: flex-start;
-    color: #0b3d91;
-    font-weight: 900;
-    font-size: 1.6em;
-    margin: 0 0 10px 30px;
+  .signature-wrap {
+    position: relative;
+    width: min(260px, 62vw);
+    height: min(260px, 62vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .question-text {
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #2b2b2b;
-    margin-bottom: 30px;
+  .ring-rotate {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      #5c8dfa,
+      #a7c5ff,
+      #3450a8,
+      #7fb2ff,
+      #5c8dfa
+    );
+    animation: spin 10s linear infinite;
+    filter: blur(0.3px);
+  }
+
+  .ring-rotate::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: #060a16;
+  }
+
+  .glow-pulse {
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    box-shadow: 0 0 60px 10px rgba(92, 141, 250, 0.35);
+    animation: pulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .signature-core {
+    position: relative;
+    width: calc(100% - 26px);
+    height: calc(100% - 26px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(92,141,250,0.18), rgba(6,10,22,0.9) 65%);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(167, 197, 255, 0.15);
+  }
+
+  .signature-name {
+    font-family: "Snell Roundhand", "Brush Script MT", Georgia, serif;
+    font-size: clamp(2.6rem, 8vw, 3.4rem);
+    letter-spacing: 0.03em;
+    font-style: italic;
+    font-weight: 600;
+    background: linear-gradient(120deg, #dbe8ff, #7fb2ff 45%, #ffffff 75%, #a7c5ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite;
+    text-shadow: 0 0 18px rgba(127, 178, 255, 0.35);
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
+
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ring-rotate, .glow-pulse, .signature-name { animation: none; }
+  }
+
+  .options-heading {
+    margin-top: 48px;
+    color: #eef2ff;
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .options-row {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
     max-width: 700px;
   }
 
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    width: 100%;
-    max-width: 400px;
-  }
-
   .option-box {
-    background: #8b5a2b;
-    color: #000000;
-    font-size: 1.2em;
-    font-weight: bold;
-    padding: 16px;
-    border-radius: 12px;
+    padding: 16px 28px;
+    border-radius: 14px;
+    background: rgba(127, 178, 255, 0.10);
+    border: 1px solid rgba(167, 197, 255, 0.30);
+    font-family: "Snell Roundhand", "Brush Script MT", Georgia, serif;
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0.02em;
     cursor: pointer;
-    box-shadow: 0 5px 8px rgba(0,0,0,0.25);
-    transition: transform 0.15s;
+    backdrop-filter: blur(4px);
+    background-image: linear-gradient(120deg, #dbe8ff, #7fb2ff 45%, #ffffff 75%, #a7c5ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 14px rgba(127, 178, 255, 0.3);
+    animation: shine 6s linear infinite;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .option-box:hover { transform: scale(1.03); }
 
-  .option-box.correct {
-    color: #0a8a0a;
+  .option-box:hover {
+    transform: translateY(-3px);
+    border-color: rgba(167, 197, 255, 0.55);
+    box-shadow: 0 8px 24px rgba(92, 141, 250, 0.25);
   }
-  .option-box.wrong {
-    color: #d10000;
+
+  .option-box.selected {
+    background-color: #ffffff;
+    background-image: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    color: #1a2b52;
+    text-shadow: none;
+    border-color: #ffffff;
+    animation: none;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
   }
-  .option-box.disabled {
+
+  .option-box:disabled:not(.selected) {
+    opacity: 0.35;
+    cursor: not-allowed;
     pointer-events: none;
   }
-  .option-box.selected-neutral {
-    color: #0b3d91;
+
+  .sub-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #9db6ec;
+    margin-top: 4px;
+    letter-spacing: 0.05em;
   }
 
-  .next-btn {
-    margin-top: 30px;
-    background: #0b3d91;
-    color: #ffffff;
-    font-weight: bold;
-    font-size: 1.1em;
-    padding: 12px 35px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    display: none;
+  .ok-text {
+    margin-top: 24px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #7fb2ff;
+    opacity: 0;
+    text-shadow: 0 0 16px rgba(127, 178, 255, 0.5);
   }
-  .next-btn.show { display: inline-block; }
 
-  .thank-you {
-    color: #0b3d91;
-    font-size: 2em;
-    font-weight: 900;
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+  .ok-text.show {
+    animation: okPop 1.2s ease forwards;
+  }
+
+  .story-text {
+    margin-top: 8px;
+    max-width: 640px;
+    color: #cdd8f7;
+    font-size: 1rem;
+    line-height: 1.7;
+    text-align: left;
+    opacity: 0;
+    min-height: 1em;
+  }
+
+  .greeting-text {
+    margin-top: 28px;
+    color: #eef2ff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    min-height: 1em;
+  }
+
+  .greeting-text.show {
+    opacity: 1;
+  }
+
+  .story-text.show {
+    opacity: 1;
+  }
+
+  .story-text .cursor {
+    display: inline-block;
+    width: 2px;
+    background: #7fb2ff;
+    margin-left: 2px;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  @keyframes okPop {
+    0% { opacity: 0; transform: translateY(6px) scale(0.9); }
+    20% { opacity: 1; transform: translateY(0) scale(1.05); }
+    35% { transform: scale(1); }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    canvas#shader-bg { display: none; }
+    body { background: linear-gradient(180deg, #0a1330, #060a16); }
   }
 </style>
 </head>
 <body>
 
-  <!-- Background decorations -->
-  <div class="cloud cloud1"></div>
-  <div class="cloud cloud2"></div>
-  <div class="cloud cloud3"></div>
-  <div class="bird bird1">🐦</div>
-  <div class="bird bird2">🐦</div>
-  <div class="bird bird3">🐦</div>
-  <div class="bird bird4">🐦</div>
+<canvas id="shader-bg"></canvas>
 
-  <!-- Start Screen -->
-  <div class="screen active" id="startScreen">
-    <h1 class="title">SUMMER VACATION WORK</h1>
-    <div class="play-box" onclick="startQuiz()">PLAY QUIZ</div>
+<div class="content">
+  <div class="signature-wrap">
+    <div class="glow-pulse"></div>
+    <div class="ring-rotate"></div>
+    <div class="signature-core">
+      <span class="signature-name">Shoaib</span>
+    </div>
   </div>
 
-  <!-- Quiz Screen -->
-  <div class="screen" id="quizScreen">
-    <div class="question-number" id="questionNumber">Question 1</div>
-    <div class="question-text" id="questionText"></div>
-    <div class="options" id="optionsContainer"></div>
-    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next</button>
+  <p class="options-heading">Who are you?</p>
+  <div class="options-row">
+    <button class="option-box" onclick="selectBox(this)">Sir Hakim</button>
+    <button class="option-box" onclick="selectBox(this)">Miss Aqsa</button>
+    <button class="option-box" onclick="selectBox(this)">Miss Fouzia</button>
+    <button class="option-box" onclick="selectBox(this)">Miss Saba</button>
+    <button class="option-box" onclick="selectBox(this)">Miss Nadia</button>
+    <button class="option-box" onclick="selectBox(this)">Other</button>
   </div>
-
-  <!-- Thank You Screen -->
-  <div class="screen" id="endScreen">
-    <div class="thank-you">Thank you for visiting my website!</div>
-  </div>
+  <p class="ok-text" id="okText">ok!</p>
+  <p class="greeting-text" id="greetingText"></p>
+  <p class="story-text" id="storyText"></p>
+  <p class="greeting-text" id="pleaText"></p>
+</div>
 
 <script>
-  const questions = [
-    {
-      q: "What is Shoaib's favourite subject?",
-      options: ["English", "Math", "S.S.T"],
-      correct: 1
-    },
-    {
-      q: "Who is Shoaib's favourite teacher?",
-      options: ["Miss Aqsa", "Miss Saba", "All"],
-      correct: 2
-    },
-    {
-      q: "Who is Shoaib's best friend?",
-      options: ["Abdul Hadi", "Anus Gull", "Salar"],
-      correct: 0
-    },
-    {
-      q: "Shoaib's study is good or bad?",
-      options: ["Good", "Bad", "Normal"],
-      correct: 0
-    },
-    {
-      q: "Do you like this website?",
-      options: ["Yes", "No"],
-      correct: -1 // opinion question, no right/wrong
-    }
-  ];
-
-  let currentQuestion = 0;
-
-  function startQuiz() {
-    document.getElementById('startScreen').classList.remove('active');
-    document.getElementById('quizScreen').classList.add('active');
-    loadQuestion();
-  }
-
-  function loadQuestion() {
-    const data = questions[currentQuestion];
-    document.getElementById('questionNumber').textContent = "Question " + (currentQuestion + 1);
-    document.getElementById('questionText').textContent = data.q;
-
-    const container = document.getElementById('optionsContainer');
-    container.innerHTML = "";
-
-    data.options.forEach((optText, index) => {
-      const box = document.createElement('div');
-      box.className = "option-box";
-      box.textContent = optText;
-      box.onclick = () => selectOption(index, box);
-      container.appendChild(box);
+  function selectBox(btn) {
+    const boxes = document.querySelectorAll('.option-box');
+    boxes.forEach(b => {
+      b.classList.remove('selected');
+      b.disabled = true;
     });
-
-    document.getElementById('nextBtn').classList.remove('show');
+    btn.classList.add('selected');
+    showOk();
+    typeGreeting(btn.textContent.trim());
   }
 
-  function selectOption(index, box) {
-    const data = questions[currentQuestion];
-    const allBoxes = document.querySelectorAll('.option-box');
+  const storyContent = "My name is Shoaib, I made this website. My father's name is Nasruddin, and my favourite subject is Math. My school name is The Bristol School System. This summer vacation I had gone to my village named Khai. Khai is in Hyderabad. I have returned to my home again after 1.5 months. My vacation work is very hard to do because I have only 15 days, so I can't do my summer work. Then my big brother gave me an idea to work on my skills, so I learned how to make a website.";
 
-    // disable further clicks
-    allBoxes.forEach(b => b.classList.add('disabled'));
+  let storyTyping = false;
 
-    if (data.correct === -1) {
-      // opinion question, just mark selected
-      box.classList.add('selected-neutral');
-      box.textContent = optTextWithLabel(box.textContent, "Thanks!");
-    } else if (index === data.correct) {
-      box.classList.add('correct');
-      box.textContent = optTextWithLabel(box.textContent, "Correct");
-    } else {
-      box.classList.add('wrong');
-      box.textContent = optTextWithLabel(box.textContent, "Wrong");
-      // also show correct answer in green
-      allBoxes[data.correct].classList.add('correct');
-      allBoxes[data.correct].textContent = optTextWithLabel(allBoxes[data.correct].textContent, "Correct");
+  function typeGreeting(name) {
+    if (storyTyping) return;
+    storyTyping = true;
+    const greetEl = document.getElementById('greetingText');
+    const storyEl = document.getElementById('storyText');
+    const pleaEl = document.getElementById('pleaText');
+    pleaEl.textContent = '';
+    pleaEl.classList.remove('show');
+    greetEl.textContent = '';
+    storyEl.textContent = '';
+    greetEl.classList.add('show');
+    const greetingContent = "Hello! " + name;
+    let i = 0;
+    const speed = 30;
+    function step() {
+      if (i < greetingContent.length) {
+        greetEl.textContent += greetingContent.charAt(i);
+        i++;
+        setTimeout(step, speed);
+      } else {
+        typeStory();
+      }
+    }
+    step();
+  }
+
+  function typeStory() {
+    const el = document.getElementById('storyText');
+    el.textContent = '';
+    el.classList.add('show');
+    let i = 0;
+    const speed = 22;
+    function step() {
+      if (i < storyContent.length) {
+        el.textContent += storyContent.charAt(i);
+        i++;
+        setTimeout(step, speed);
+      } else {
+        typePlea();
+      }
+    }
+    step();
+  }
+
+  const pleaContent = "Please don't punish me because I didn't do my summer work!";
+
+  function typePlea() {
+    const el = document.getElementById('pleaText');
+    el.textContent = '';
+    el.classList.add('show');
+    let i = 0;
+    const speed = 30;
+    function step() {
+      if (i < pleaContent.length) {
+        el.textContent += pleaContent.charAt(i);
+        i++;
+        setTimeout(step, speed);
+      } else {
+        storyTyping = false;
+      }
+    }
+    step();
+  }
+
+  function showOk() {
+    const el = document.getElementById('okText');
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+  }
+</script>
+
+<script>
+// Subtle animated shader background using WebGL fragment shader
+const canvas = document.getElementById('shader-bg');
+const gl = canvas.getContext('webgl');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resize);
+resize();
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (gl && !reducedMotion) {
+  const vertSrc = `
+    attribute vec2 position;
+    void main() {
+      gl_Position = vec4(position, 0.0, 1.0);
+    }
+  `;
+
+  const fragSrc = `
+    precision highp float;
+    uniform vec2 uRes;
+    uniform float uTime;
+
+    // simple hash/noise
+    float hash(vec2 p) {
+      return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+    }
+    float noise(vec2 p) {
+      vec2 i = floor(p);
+      vec2 f = fract(p);
+      vec2 u = f * f * (3.0 - 2.0 * f);
+      return mix(
+        mix(hash(i), hash(i + vec2(1.0,0.0)), u.x),
+        mix(hash(i + vec2(0.0,1.0)), hash(i + vec2(1.0,1.0)), u.x),
+        u.y
+      );
+    }
+    float fbm(vec2 p) {
+      float v = 0.0;
+      float a = 0.5;
+      for (int i = 0; i < 5; i++) {
+        v += a * noise(p);
+        p *= 2.0;
+        a *= 0.5;
+      }
+      return v;
     }
 
-    document.getElementById('nextBtn').classList.add('show');
-  }
+    void main() {
+      vec2 uv = gl_FragCoord.xy / uRes.xy;
+      vec2 p = uv * 3.0;
 
-  function optTextWithLabel(original, label) {
-    // avoid double labeling
-    const base = original.split(" - ")[0];
-    return base + " - " + label;
-  }
+      float t = uTime * 0.05;
+      float n = fbm(p + vec2(t, -t * 0.7));
+      float n2 = fbm(p * 1.6 - vec2(t * 0.3, t * 0.2) + 4.0);
 
-  function nextQuestion() {
-    currentQuestion++;
-    if (currentQuestion < questions.length) {
-      loadQuestion();
-    } else {
-      document.getElementById('quizScreen').classList.remove('active');
-      document.getElementById('endScreen').classList.add('active');
+      // deep navy base tones
+      vec3 colA = vec3(0.02, 0.04, 0.10);
+      vec3 colB = vec3(0.05, 0.09, 0.22);
+      vec3 colC = vec3(0.09, 0.15, 0.34);
+
+      vec3 col = mix(colA, colB, n);
+      col = mix(col, colC, n2 * 0.5);
+
+      // gentle vignette
+      float vig = smoothstep(1.1, 0.2, length(uv - 0.5));
+      col *= mix(0.7, 1.0, vig);
+
+      // moving light-blue glow rising from the bottom
+      float wobble = sin(uv.x * 3.0 + uTime * 0.4) * 0.05
+                   + sin(uv.x * 6.0 - uTime * 0.25) * 0.03;
+      float bottomGlow = smoothstep(0.55 + wobble, -0.1, uv.y);
+      vec3 lightBlue = vec3(0.35, 0.55, 0.95);
+      col = mix(col, lightBlue, bottomGlow * 0.35);
+
+      gl_FragColor = vec4(col, 1.0);
     }
+  `;
+
+  function compile(type, src) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    return shader;
   }
+
+  const vShader = compile(gl.VERTEX_SHADER, vertSrc);
+  const fShader = compile(gl.FRAGMENT_SHADER, fragSrc);
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vShader);
+  gl.attachShader(program, fShader);
+  gl.linkProgram(program);
+  gl.useProgram(program);
+
+  const vertices = new Float32Array([
+    -1, -1,  1, -1,  -1, 1,
+    -1, 1,   1, -1,   1, 1
+  ]);
+  const buffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+  const posLoc = gl.getAttribLocation(program, 'position');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes = gl.getUniformLocation(program, 'uRes');
+  const uTime = gl.getUniformLocation(program, 'uTime');
+
+  function render(time) {
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, time * 0.001);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+} else if (!gl) {
+  // fallback if webgl unavailable
+  document.body.style.background = 'linear-gradient(180deg, #0a1330, #060a16)';
+}
 </script>
 
 </body>
